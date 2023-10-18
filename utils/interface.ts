@@ -10,6 +10,8 @@ export interface iStudent {
     studentImageID: string;
     gender: string;
     balance: number;
+    verify:boolean;
+    token:string;
     feeHistory: {}[];
     bagHistory: Array<{}>;
   }
