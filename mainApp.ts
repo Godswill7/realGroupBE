@@ -11,7 +11,7 @@ app.get("/",()=>{
 try {
     console.log("welcome to our platform")
 } catch (error) {
-    console.log("error")
+    console.log("error in getting")
 }
 })
 }
