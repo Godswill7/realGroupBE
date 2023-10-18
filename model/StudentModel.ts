@@ -14,6 +14,12 @@ const studentModel = new mongoose.Schema<iStudentData>(
     password: {
       type: String,
     },
+    verify: {
+      type: Boolean,
+    },
+    token: {
+      type: String,
+    },
     phoneNumber: {
       type: String,
     },
