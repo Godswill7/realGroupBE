@@ -1,13 +1,17 @@
+import { dbConnect } from './config/Database';
 import express, { Application } from "express"
 import { mainApp } from "./mainApp";
+import env from "dotenv"
+env.config()
 
 
-const port: number = 1111;
+const port: number = parseInt(process.env.PORT!);
 const app: Application = express()
 
-const server = app.listen(() => {
+const server = app.listen(port,() => {
     console.log()
-    console.log("Server is up 🚀🚀🚀")
+    dbConnect()
+    // console.log("Server is up 🚀🚀🚀")
 })
 mainApp(app)
 
