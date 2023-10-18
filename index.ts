@@ -1,23 +1,22 @@
-import express,{Application} from "express"
-import dotenv from "dotenv"
-dotenv.config()
-const port = process.env.APPLICATION_PORT
-const app:Application = express()
+import express, { Application } from "express"
+import { mainApp } from "./mainApp";
 
-const server = app.listen(port,()=>{
-console.log("")
-console.log("Server is on")
+
+const port: number = 1111;
+const app: Application = express()
+
+const server = app.listen(() => {
+    console.log()
+    console.log("Server is up 🚀🚀🚀")
+})
+mainApp(app)
+
+process.on("uncaughtException",(error:Error | any) => {
+console.log("Error due to uncaughtException", error);
 })
 
-process.on("uncaughtException",(error:any)=>{
-console.log("server is crashing due to uncaughtException",error)
-process.exit(1)
-})
-
-process.on("unhandledRejection",(reason:any)=>{
-console.log("server is crashing due to unhandledRejection",reason)
-server.close(()=>{
-    process.exit(1)
-})
-
-})
+process.on("unhandledRejection", (reason: Error | any) => {
+    server.close(() => {
+        console.log("Error due to unhandledRejection",reason);
+    })
+});
