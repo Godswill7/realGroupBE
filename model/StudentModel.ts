@@ -16,6 +16,7 @@ const studentModel = new mongoose.Schema<iStudentData>(
     },
     verify: {
       type: Boolean,
+      default:false
     },
     token: {
       type: String,
