@@ -57,7 +57,7 @@ const signInUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (student) {
             const checkPass = yield bcrypt_1.default.compare(password, student === null || student === void 0 ? void 0 : student.password);
             if (checkPass) {
-                if ((student === null || student === void 0 ? void 0 : student.verify) === false && (student === null || student === void 0 ? void 0 : student.token) === "") {
+                if ((student === null || student === void 0 ? void 0 : student.verify) && (student === null || student === void 0 ? void 0 : student.token) === "") {
                     console.log(student === null || student === void 0 ? void 0 : student.verify);
                     console.log(student === null || student === void 0 ? void 0 : student.token);
                     const token = jsonwebtoken_1.default.sign({ id: student._id }, "");
