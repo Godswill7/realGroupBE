@@ -10,13 +10,22 @@ export const createBagRecord = async (
 ): Promise<Response> => {
   try {
     const { bag, email } = req.body;
+    console.log(email, bag)
+    console.log(typeof bag)
 
     const searchUser = await StudentModel.findOne({ email });
-    if (searchUser) {
+    const getBag:number = bag * 200
+
+    if(searchUser) {
       const bagInfo = await BagModel.create({
         bag,
-        cash: bag * 200,
+        cash: getBag,
+        studentID: searchUser._id,
+        student: searchUser,
       });
+
+       console.log(bagInfo);
+
       const update = await StudentModel.findByIdAndUpdate(
         searchUser._id,
         {

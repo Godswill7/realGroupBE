@@ -20,12 +20,18 @@ const mainError_1 = require("../error/mainError");
 const createBagRecord = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { bag, email } = req.body;
+        console.log(email, bag);
+        console.log(typeof bag);
         const searchUser = yield StudentModel_1.default.findOne({ email });
+        const getBag = bag * 200;
         if (searchUser) {
             const bagInfo = yield BagModel_1.default.create({
                 bag,
-                cash: bag * 200,
+                cash: getBag,
+                studentID: searchUser._id,
+                student: searchUser,
             });
+            console.log(bagInfo);
             const update = yield StudentModel_1.default.findByIdAndUpdate(searchUser._id, {
                 balance: (searchUser === null || searchUser === void 0 ? void 0 : searchUser.balance) + (bagInfo === null || bagInfo === void 0 ? void 0 : bagInfo.cash),
             }, { new: true });

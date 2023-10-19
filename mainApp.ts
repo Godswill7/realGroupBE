@@ -1,7 +1,7 @@
 import cors from "cors"
 import express, { Application, Request, Response } from "express"
 import student from "./router/userRouter"
-import bag from "./router/userRouter"
+import bag from "./router/bagRouter"
 import fee from "./router/FeeRouter"
 import { HTTP } from "./error/mainError"
 
