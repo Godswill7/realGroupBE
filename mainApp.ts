@@ -1,14 +1,12 @@
 import cors from "cors"
 import express, { Application, Request, Response } from "express"
 import student from "./router/userRouter"
-import bag from "./router/bagRouter";
 import { HTTP } from "./error/mainError"
 
 export const mainApp =(app:Application)=>{
     app.use(express.json())
     app.use(cors()) 
     app.use("/api",student)
-    app.use("/api",bag)
     
 
 app.get("/",(req:Request,res:Response)=>{
