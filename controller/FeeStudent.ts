@@ -11,26 +11,30 @@ export const createFeeRecord = async (
     const { cash, email } = req.body;
 
     const searchUser = await StudentModel.findOne({ email });
-    
+    // console.log(searchUser)
+
     if (searchUser) {
+      console.log("build")
+      
       const bagInfo = await FeeModel.create({
         cash: parseInt(cash),
         studentID: searchUser?._id,
         schoolName: searchUser?.schoolName,
       });
 
-      console.log(bagInfo)
+      console.log("Bag: ", bagInfo)
+      
       await StudentModel.findByIdAndUpdate(
         searchUser._id,
         {
-          balance: (searchUser?.balance) - bagInfo?.cash,
+          balance: searchUser?.balance - cash,
         },
 
         { new: true }
       );
       searchUser.feeHistory.push(new mongoose.Types.ObjectId(bagInfo?._id));
       searchUser.save();
-
+console.log("Agaijn: ",searchUser)
       return res.status(201).json({
         message: "created",
         data: bagInfo,

@@ -21,6 +21,7 @@ export const createUser = async (req: Request, res: Response) => {
       password: hash,
       studentName,
       token,
+      balance: 0,
       studentImage: await email.charAt().toUpperCase(),
     });
     sendMail(user).then(() => {
@@ -50,14 +51,14 @@ export const signInUser = async (req: Request, res: Response) => {
         if (student?.verify && student?.token === "") {
           console.log(student?.verify)
           console.log(student?.token)
-          const token = jwt.sign({ id: student._id }, "");
+          const token = jwt.sign({ id: student._id }, "code");
           return res.status(HTTP.OK).json({
             message: `Welcome back ${student.studentName}`,
-            data: token,
+            data:token
           });
         } else {
           return res.status(HTTP.BAD).json({
-            message: "go and verify your email",
+            message: "go and verify your email"
           });
         }
       } else {
@@ -158,20 +159,14 @@ export const updateUserInfo = async (req: Request, res: Response) => {
     if (user) {
       const { schoolName, phoneNumber, HouseAddress, gender } = req.body;
 
-      const update = await StudentModel.findByIdAndUpdate(studentID).updateOne(
-        {
-          schoolName,
-          phoneNumber,
-          HouseAddress,
-          gender,
-        },
-        {
-          new: true,
-        }
-      );
-
-      await user.save();
-
+      const update = await StudentModel.findByIdAndUpdate(studentID, {
+        schoolName,
+        phoneNumber,
+        HouseAddress, 
+        gender
+        
+      }, { new: true })
+      
       return res.status(HTTP.UPDATE).json({
         message: "updated successfully",
         data: update,

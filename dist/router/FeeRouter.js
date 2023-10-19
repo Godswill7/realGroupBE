@@ -4,9 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const bagController_1 = require("../controller/bagController");
+const FeeStudent_1 = require("../controller/FeeStudent");
 const Router = express_1.default.Router();
-Router.route("/create-bag-record").patch(bagController_1.createBagRecord);
-Router.route("/:studentID/view-student-bag").get(bagController_1.viewBagRecord);
-Router.route("/:bagID/delete-bag").delete(bagController_1.deleteBag);
+Router.route("/create-fee").post(FeeStudent_1.createFeeRecord),
+    Router.route("/:studentID/viewFee").get(FeeStudent_1.viewFeeRecord);
 exports.default = Router;
