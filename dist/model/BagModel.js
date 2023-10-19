@@ -11,6 +11,9 @@ const bagModel = new mongoose_1.default.Schema({
     cash: {
         type: Number,
     },
+    studentID: {
+        type: String,
+    },
     student: {
         type: mongoose_1.default.Types.ObjectId,
         ref: "bags",
