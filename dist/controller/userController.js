@@ -24,16 +24,17 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const { email, password, studentName } = req.body;
         const encrypt = yield bcrypt_1.default.genSalt(10);
         const hash = yield bcrypt_1.default.hash(password, encrypt);
-        const tokenValue = crypto_1.default.randomBytes(16).toString("hex");
+        const tokenValue = crypto_1.default.randomBytes(10).toString("hex");
         const token = jsonwebtoken_1.default.sign(tokenValue, "justRand");
         const user = yield StudentModel_1.default.create({
             email,
             password: hash,
             studentName,
             token,
+            studentImage: yield email.charAt().toUpperCase(),
         });
-        (0, email_1.openingMail)(res).then(() => {
-            console.log("mail sent");
+        (0, email_1.sendMail)(user).then(() => {
+            console.log("Mail Sent...");
         });
         return res.status(mainError_1.HTTP.CREATE).json({
             message: "user created successfully",
@@ -43,33 +44,32 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     catch (error) {
         return res.status(mainError_1.HTTP.BAD).json({
             message: "Error creating user",
-            data: error.message
+            data: error.message,
         });
     }
 });
 exports.createUser = createUser;
 const signInUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { studentID } = req.params;
         const { email, password } = req.body;
-        const user = yield StudentModel_1.default.findById(studentID);
-        if (user) {
-            const checkPass = yield bcrypt_1.default.compare(password, user === null || user === void 0 ? void 0 : user.password);
+        const student = yield StudentModel_1.default.findOne({ email });
+        if (student) {
+            const checkPass = yield bcrypt_1.default.compare(password, student === null || student === void 0 ? void 0 : student.password);
             if (checkPass) {
                 return res.status(mainError_1.HTTP.OK).json({
-                    message: `Welcome back ${user.studentName}`,
-                    data: user._id
+                    message: `Welcome back ${student.studentName}`,
+                    data: student._id,
                 });
             }
             else {
                 return res.status(mainError_1.HTTP.BAD).json({
-                    message: "Incorrect password"
+                    message: "Incorrect password",
                 });
             }
         }
         else {
             return res.status(mainError_1.HTTP.BAD).json({
-                message: "User does not exist"
+                message: "User does not exist",
             });
         }
     }
@@ -83,38 +83,25 @@ const signInUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.signInUser = signInUser;
 const verifyUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { studentID, token } = req.params;
-        const user = yield StudentModel_1.default.findById(studentID);
-        if (user) {
-            const verify = yield StudentModel_1.default.findByIdAndUpdate(studentID);
-            if (user.verify === false && user.token !== "") {
-                const ver = yield (verify === null || verify === void 0 ? void 0 : verify.updateOne({
-                    verify: true,
-                    token: "",
-                }, {
-                    new: true,
-                }));
-                return res.status(mainError_1.HTTP.UPDATE).json({
-                    message: "verify successful",
-                    data: ver === null || ver === void 0 ? void 0 : ver.id
-                });
+        const { token } = req.params;
+        const student = jsonwebtoken_1.default.verify(token, "justRand", (err, payload) => {
+            if (err) {
+                return err;
             }
             else {
-                return res.status(mainError_1.HTTP.BAD).json({
-                    message: "unable to verify",
-                });
+                return payload;
             }
-        }
-        else {
-            return res.status(mainError_1.HTTP.BAD).json({
-                message: "User does not exist"
-            });
-        }
+        });
+        yield StudentModel_1.default.findByIdAndUpdate(student === null || student === void 0 ? void 0 : student.id, { token: "", verified: true }, { new: true });
+        return res.status(mainError_1.HTTP.CREATE).json({
+            message: "your account has been Verified",
+            data: student,
+        });
     }
     catch (error) {
         return res.status(mainError_1.HTTP.BAD).json({
-            message: "Error verifying user",
-            data: error.message,
+            message: `Error verifying user: ${error.message}`
+            // data: error,
         });
     }
 });
@@ -164,17 +151,17 @@ const updateUserInfo = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 HouseAddress,
                 gender,
             }, {
-                new: true
+                new: true,
             });
             yield user.save();
             return res.status(mainError_1.HTTP.UPDATE).json({
                 message: "updated successfully",
-                data: update
+                data: update,
             });
         }
         else {
             return res.status(mainError_1.HTTP.BAD).json({
-                message: "User does not exist"
+                message: "User does not exist",
             });
         }
     }
@@ -197,7 +184,7 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     catch (error) {
         return res.status(mainError_1.HTTP.DELETE).json({
             message: "error deleting user",
-            data: error.message
+            data: error.message,
         });
     }
 });
@@ -212,7 +199,7 @@ const deleteAllUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     catch (error) {
         return res.status(mainError_1.HTTP.DELETE).json({
             message: "error deleting all user",
-            data: error.message
+            data: error.message,
         });
     }
 });

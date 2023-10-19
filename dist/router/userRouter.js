@@ -9,7 +9,7 @@ const router = express_1.default.Router();
 router.route("/create").post(userController_1.createUser);
 router.route("/sign-in").post(userController_1.signInUser);
 router.route("/:studentID/get-one").get(userController_1.getUser);
-router.route("/:studentID/:token/verify").get(userController_1.verifyUser);
+router.route("/:token/verify").patch(userController_1.verifyUser);
 router.route("/get-all").get(userController_1.getAllUser);
 router.route("/:studentID/update-one").patch(userController_1.updateUserInfo);
 router.route("/:studentID/delete-one").delete(userController_1.deleteUser);

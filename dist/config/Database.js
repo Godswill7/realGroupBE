@@ -15,7 +15,7 @@ const dbConnect = () => {
         });
     }
     catch (error) {
-        console.log("Error conecting db");
+        console.log("Error conecting db", error.message);
     }
 };
 exports.dbConnect = dbConnect;

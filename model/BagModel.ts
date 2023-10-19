@@ -11,7 +11,9 @@ const bagModel = new mongoose.Schema<iBagData>(
     cash: {
       type: Number,
     },
-
+    studentID: {
+      type: String,
+    },
     student: {
       type: mongoose.Types.ObjectId,
       ref: "bags",
