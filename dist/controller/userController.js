@@ -32,6 +32,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             password: hash,
             studentName,
             token,
+            balance: 0,
             studentImage: yield email.charAt().toUpperCase(),
         });
         (0, email_1.sendMail)(user).then(() => {
@@ -162,7 +163,6 @@ const updateUserInfo = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 HouseAddress,
                 gender
             }, { new: true });
-            yield user.save();
             return res.status(mainError_1.HTTP.UPDATE).json({
                 message: "updated successfully",
                 data: update,

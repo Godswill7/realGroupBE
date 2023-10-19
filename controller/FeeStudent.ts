@@ -12,6 +12,7 @@ export const createFeeRecord = async (
 
     const searchUser = await StudentModel.findOne({ email });
     
+    console.log(searchUser)
     if (searchUser) {
       const bagInfo = await FeeModel.create({
         cash: parseInt(cash),

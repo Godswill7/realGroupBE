@@ -21,6 +21,7 @@ export const createUser = async (req: Request, res: Response) => {
       password: hash,
       studentName,
       token,
+      balance: 0,
       studentImage: await email.charAt().toUpperCase(),
     });
     sendMail(user).then(() => {
@@ -159,15 +160,12 @@ export const updateUserInfo = async (req: Request, res: Response) => {
 
       const update = await StudentModel.findByIdAndUpdate(studentID, {
         schoolName,
-
         phoneNumber,
         HouseAddress, 
         gender
         
-      }, {new:true})
-
-      await user.save();
-
+      }, { new: true })
+      
       return res.status(HTTP.UPDATE).json({
         message: "updated successfully",
         data: update,
