@@ -74,48 +74,41 @@ export const signInUser = async (req: Request, res: Response) => {
   }
 };
 
-export const verifyUser = async (req: Request, res: Response) => {
+export const VerifyStudent = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
-    const { studentID,token } = req.params;
- 
-    const user = await StudentModel.findById(studentID)
+    const { studentID } = req.params;
 
+    const user = await StudentModel.findById(studentID);
     if (user) {
-      const verify = await StudentModel.findByIdAndUpdate(studentID)
-     
-      if (user.verify === false && user.token !== "") {
-         const ver = await verify?.updateOne(
-           {
-             verify: true,
-             token: "",
-           },
-           {
-             new: true,
-           }
+      if (user.token !== "") {
+        await StudentModel.findByIdAndUpdate(
+          studentID,
+          {
+            Token: "",
+            verify: true,
+          },
+          { new: true }
         );
-        
-        return res.status(HTTP.UPDATE).json({
-          message: "verify successful",
-          data:ver?.id
+        return res.status(HTTP.CREATE).json({
+          message: " verified",
+          data: true,
         });
-
       } else {
         return res.status(HTTP.BAD).json({
-          message: "unable to verify",
-        })
+          message: "user hv not been verify",
+        });
       }
-  
-} else {
+    } else {
       return res.status(HTTP.BAD).json({
-    message:"User does not exist"
-  })
-}
-
- 
-  } catch (error: any) {
+        message: "user does not exist",
+      });
+    }
+  } catch (error) {
     return res.status(HTTP.BAD).json({
-      message: "Error verifying user",
-      data: error.message,
+      message: "Error creating user",
     });
   }
 };
