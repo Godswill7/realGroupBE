@@ -7,6 +7,7 @@ export const mainApp =(app:Application)=>{
     app.use(express.json())
     app.use(cors()) 
     app.use("/api",student)
+    app.use(cors())
     
 
 app.get("/",(req:Request,res:Response)=>{
@@ -15,9 +16,7 @@ try {
         message: "Welcome",
 })
 } catch (error) {
-    return res.status(HTTP.BAD).json({
-      message: "Root Error",
-    });
+    console.log("error")
 }
 })
 }
