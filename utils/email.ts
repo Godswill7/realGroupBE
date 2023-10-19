@@ -1,60 +1,3 @@
-// import nodemailer from "nodemailer";
-// import { google } from "googleapis";
-// import path from "path";
-// import ejs from "ejs";
-
-// const GOOGLE_ID =
-//   "350112565242-i5a82npf6pc73u523721ee54igrgc24f.apps.googleusercontent.com";
-// const GOOGLE_SECRET = "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";
-// const GOOGLE_REFRESHTOKEN =
-//   "1//04v33T2V5HnMJCgYIARAAGAQSNwF-L9IrhoVUxDKC4XEb3JxisBd0OKOpDPT-EEQ2vC_u5CCNvVE4dJAgYoxpbFxrZF7hGkpx-0Y";
-
-// const GOOGLE_URL = "https://developers.google.com/oauthplayground/";
-
-// const oAuth = new google.auth.OAuth2(GOOGLE_ID, GOOGLE_SECRET, GOOGLE_URL);
-// oAuth.setCredentials({ access_token: GOOGLE_REFRESHTOKEN });
-
-// const URL: string = "http://localhost:3344";
-
-// export const openingMail = async (user: any) => {
-//   try {
-//     const accessToken: any = (await oAuth.getAccessToken()).token;
-
-//     const transport = nodemailer.createTransport({
-//       service: "gmail",
-//       auth: {
-//         type: "OAuth2",
-//         user: "udidagodswill7@gmail.com",
-//         clientId: GOOGLE_ID,
-//         clientSecret: GOOGLE_SECRET,
-//         refreshToken: GOOGLE_REFRESHTOKEN,
-//         accessToken,
-//       },
-//     });
-
-//     const data = {
-//       email: user.email,
-//       userName: user.name,
-//       url: `${URL}/api/${user.id}/verify`,
-//     };
-
-
-//     const locateFile = path.join(__dirname, "../views/request.ejs");
-//     const readFile = await ejs.renderFile(locateFile, data);
-
-//     const mailer = {
-//       // from: "Account Opening 🚀🚀🚀 <udidagodswill7@gmail.com>",
-//       from: user?.email,
-//       to: user?.email,
-//       subject: "Account Opening",
-//       html: readFile,
-//     };
-
-//     transport.sendMail(mailer);
-//   } catch (error:any) {
-//     console.log(error.message);
-//   }
-// };
 
 import { google } from "googleapis";
 import { oauth2 } from "googleapis/build/src/apis/oauth2";
@@ -76,8 +19,6 @@ const GOOGLE_TOKEN =
 const oAuth = new google.auth.OAuth2(GOOGLE_ID, GOOGLE_SECRET, GOOGLE_URL);
 oAuth.setCredentials({ access_token: GOOGLE_TOKEN });
 
-// const url =   `http://localhost:1111/api/${token}/verify`;
-
 export const sendMail = async (user: any) => {
   try {
     const getAccess: any = (await oAuth.getAccessToken()).token;
@@ -95,17 +36,17 @@ export const sendMail = async (user: any) => {
       },
     });
 
-
-    const url = `http://localhost:5173/api`;
-
+    // const url = `http://localhost:5173/api/${user.id}/verify`;
 
     const token = jwt.sign(
       {
         id: user.id,
       },
-      "code"
+      "justRand"
     );
 
+
+    const url = `http://localhost:1111/api`;
     const choiceData = {
       url:`${url}/${token}/verify`,
     };
