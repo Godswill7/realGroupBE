@@ -36,9 +36,19 @@ export const sendMail = async (user: any) => {
       },
     });
 
-    const url = `http://localhost:5173/api/${user.id}/verify`;
+    // const url = `http://localhost:5173/api/${user.id}/verify`;
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+      },
+      "justRand"
+    );
+
+
+    const url = `http://localhost:1111/api`;
     const choiceData = {
-      url:`${url}/${user.token}/verify`,
+      url:`${url}/${token}/verify`,
     };
 
     const data = path.join(__dirname, "../views/FirstMailSent.ejs");
