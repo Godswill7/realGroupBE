@@ -52,8 +52,7 @@ export const signInUser = async (req: Request, res: Response) => {
           console.log(student?.token)
           const token = jwt.sign({ id: student._id }, "code");
           return res.status(HTTP.OK).json({
-            message: `Welcome back ${student.studentName}`,
-            data: token,
+            message: `Welcome back ${student.studentName}`
           });
         } else {
           return res.status(HTTP.BAD).json({
@@ -158,17 +157,14 @@ export const updateUserInfo = async (req: Request, res: Response) => {
     if (user) {
       const { schoolName, phoneNumber, HouseAddress, gender } = req.body;
 
-      const update = await StudentModel.findByIdAndUpdate(studentID).updateOne(
-        {
-          schoolName,
-          phoneNumber,
-          HouseAddress,
-          gender,
-        },
-        {
-          new: true,
-        }
-      );
+      const update = await StudentModel.findByIdAndUpdate(studentID, {
+        schoolName,
+
+        phoneNumber,
+        HouseAddress, 
+        gender
+        
+      }, {new:true})
 
       await user.save();
 
