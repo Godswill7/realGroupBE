@@ -12,13 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAllUser = exports.deleteUser = exports.updateUserInfo = exports.getAllUser = exports.getUser = exports.verifyUser = exports.signInUser = exports.createUser = void 0;
+exports.checkOutWithPayStack = exports.deleteAllUser = exports.deleteUser = exports.updateUserInfo = exports.getAllUser = exports.getUser = exports.VerifyStudent = exports.signInUser = exports.createUser = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const StudentModel_1 = __importDefault(require("../model/StudentModel"));
 const mainError_1 = require("../error/mainError");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const crypto_1 = __importDefault(require("crypto"));
 const email_1 = require("../utils/email");
+const https_1 = __importDefault(require("https"));
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password, studentName } = req.body;
@@ -56,10 +57,20 @@ const signInUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (student) {
             const checkPass = yield bcrypt_1.default.compare(password, student === null || student === void 0 ? void 0 : student.password);
             if (checkPass) {
-                return res.status(mainError_1.HTTP.OK).json({
-                    message: `Welcome back ${student.studentName}`,
-                    data: student._id,
-                });
+                if ((student === null || student === void 0 ? void 0 : student.verify) === false && (student === null || student === void 0 ? void 0 : student.token) === "") {
+                    console.log(student === null || student === void 0 ? void 0 : student.verify);
+                    console.log(student === null || student === void 0 ? void 0 : student.token);
+                    const token = jsonwebtoken_1.default.sign({ id: student._id }, "");
+                    return res.status(mainError_1.HTTP.OK).json({
+                        message: `Welcome back ${student.studentName}`,
+                        data: token,
+                    });
+                }
+                else {
+                    return res.status(mainError_1.HTTP.BAD).json({
+                        message: "go and verify your email",
+                    });
+                }
             }
             else {
                 return res.status(mainError_1.HTTP.BAD).json({
@@ -81,10 +92,10 @@ const signInUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.signInUser = signInUser;
-const verifyUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const VerifyStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { token } = req.params;
-        const student = jsonwebtoken_1.default.verify(token, "justRand", (err, payload) => {
+        const getStudentId = jsonwebtoken_1.default.verify(token, "code", (err, payload) => {
             if (err) {
                 return err;
             }
@@ -92,20 +103,21 @@ const verifyUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 return payload;
             }
         });
-        yield StudentModel_1.default.findByIdAndUpdate(student === null || student === void 0 ? void 0 : student.id, { token: "", verified: true }, { new: true });
-        return res.status(mainError_1.HTTP.CREATE).json({
-            message: "your account has been Verified",
-            data: student,
+        console.log(getStudentId);
+        const student = yield StudentModel_1.default.findByIdAndUpdate(getStudentId === null || getStudentId === void 0 ? void 0 : getStudentId.id, { token: "", verify: true }, { new: true });
+        return res.status(mainError_1.HTTP.OK).json({
+            message: "verified successfully",
+            data: student === null || student === void 0 ? void 0 : student.id,
         });
     }
     catch (error) {
         return res.status(mainError_1.HTTP.BAD).json({
-            message: `Error verifying user: ${error.message}`
-            // data: error,
+            message: "error",
+            data: error.message,
         });
     }
 });
-exports.verifyUser = verifyUser;
+exports.VerifyStudent = VerifyStudent;
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { studentID } = req.params;
@@ -204,3 +216,50 @@ const deleteAllUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.deleteAllUser = deleteAllUser;
+const checkOutWithPayStack = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email, amount } = req.body;
+        const { studentID } = req.params;
+        const params = JSON.stringify({
+            email,
+            amount: parseInt(amount) * 100,
+            studentID,
+        });
+        const options = {
+            hostname: "api.paystack.co",
+            port: 443,
+            path: "/transaction/initialize",
+            method: "POST",
+            headers: {
+                Authorization: "Bearer sk_test_69da8b749744f32de8dd9359178903450d74b650",
+                "Content-Type": "application/json",
+            },
+        };
+        const ask = https_1.default
+            .request(options, (resp) => {
+            let data = "";
+            resp.on("data", (chunk) => {
+                data += chunk;
+            });
+            resp.on("end", () => {
+                console.log(JSON.parse(data));
+                res.status(mainError_1.HTTP.OK).json({
+                    message: "Payment successful",
+                    data: JSON.parse(data),
+                });
+            });
+        })
+            .on("error", (error) => {
+            console.error(error.message);
+        });
+        ask.write(params);
+        ask.end();
+    }
+    catch (error) {
+        return res.status(mainError_1.HTTP.BAD).json({
+            message: "Error making Payment",
+            data: error.message,
+        });
+    }
+});
+exports.checkOutWithPayStack = checkOutWithPayStack;

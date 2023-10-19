@@ -4,11 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mainApp = void 0;
-const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
 const userRouter_1 = __importDefault(require("./router/userRouter"));
 const bagRouter_1 = __importDefault(require("./router/bagRouter"));
 const mainError_1 = require("./error/mainError");
+const cors_1 = __importDefault(require("cors"));
 const mainApp = (app) => {
     app.use(express_1.default.json());
     app.use((0, cors_1.default)());
