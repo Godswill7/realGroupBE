@@ -63,12 +63,13 @@ const signInUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                     console.log(student === null || student === void 0 ? void 0 : student.token);
                     const token = jsonwebtoken_1.default.sign({ id: student._id }, "code");
                     return res.status(mainError_1.HTTP.OK).json({
-                        message: `Welcome back ${student.studentName}`
+                        message: `Welcome back ${student.studentName}`,
+                        data: token
                     });
                 }
                 else {
                     return res.status(mainError_1.HTTP.BAD).json({
-                        message: "go and verify your email",
+                        message: "go and verify your email"
                     });
                 }
             }

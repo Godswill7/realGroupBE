@@ -53,11 +53,12 @@ export const signInUser = async (req: Request, res: Response) => {
           console.log(student?.token)
           const token = jwt.sign({ id: student._id }, "code");
           return res.status(HTTP.OK).json({
-            message: `Welcome back ${student.studentName}`
+            message: `Welcome back ${student.studentName}`,
+            data:token
           });
         } else {
           return res.status(HTTP.BAD).json({
-            message: "go and verify your email",
+            message: "go and verify your email"
           });
         }
       } else {

@@ -22,13 +22,13 @@ const createFeeRecord = (req, res) => __awaiter(void 0, void 0, void 0, function
         const searchUser = yield StudentModel_1.default.findOne({ email });
         if (searchUser) {
             const bagInfo = yield FeeModel_1.default.create({
-                cash,
+                cash: parseInt(cash),
                 studentID: searchUser === null || searchUser === void 0 ? void 0 : searchUser._id,
                 schoolName: searchUser === null || searchUser === void 0 ? void 0 : searchUser.schoolName,
             });
             console.log(bagInfo);
             yield StudentModel_1.default.findByIdAndUpdate(searchUser._id, {
-                balance: (searchUser === null || searchUser === void 0 ? void 0 : searchUser.balance) - (bagInfo === null || bagInfo === void 0 ? void 0 : bagInfo.cash),
+                balance: (bagInfo === null || bagInfo === void 0 ? void 0 : bagInfo.cash) - (searchUser === null || searchUser === void 0 ? void 0 : searchUser.balance),
             }, { new: true });
             searchUser.feeHistory.push(new mongoose_1.default.Types.ObjectId(bagInfo === null || bagInfo === void 0 ? void 0 : bagInfo._id));
             searchUser.save();

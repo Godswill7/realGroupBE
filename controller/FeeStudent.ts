@@ -14,7 +14,7 @@ export const createFeeRecord = async (
     
     if (searchUser) {
       const bagInfo = await FeeModel.create({
-        cash,
+        cash: parseInt(cash),
         studentID: searchUser?._id,
         schoolName: searchUser?.schoolName,
       });
@@ -23,7 +23,7 @@ export const createFeeRecord = async (
       await StudentModel.findByIdAndUpdate(
         searchUser._id,
         {
-          balance: (searchUser?.balance) - bagInfo?.cash,
+          balance: bagInfo?.cash-(searchUser?.balance),
         },
 
         { new: true }
