@@ -27,5 +27,6 @@ export interface iStudent {
     bag: number;
     cash: number;
     student: {};
+    studentID: string;
   }
   

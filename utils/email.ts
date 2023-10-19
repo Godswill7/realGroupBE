@@ -61,6 +61,7 @@ import { oauth2 } from "googleapis/build/src/apis/oauth2";
 import nodemailer from "nodemailer";
 import path from "path";
 import ejs from "ejs";
+import jwt from "jsonwebtoken"
 
 const GOOGLE_ID =
   "199704572461-84filrl6gfs1cie7b5bkvspne91bbj0q.apps.googleusercontent.com";
@@ -75,9 +76,12 @@ const GOOGLE_TOKEN =
 const oAuth = new google.auth.OAuth2(GOOGLE_ID, GOOGLE_SECRET, GOOGLE_URL);
 oAuth.setCredentials({ access_token: GOOGLE_TOKEN });
 
+// const url =   `http://localhost:1111/api/${token}/verify`;
+
 export const sendMail = async (user: any) => {
   try {
     const getAccess: any = (await oAuth.getAccessToken()).token;
+
 
     const transport = nodemailer.createTransport({
       service: "gmail",
@@ -91,12 +95,18 @@ export const sendMail = async (user: any) => {
       },
     });
 
-    const url = `http://localhost:1111/api/${user.id}/verify`;
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+      },
+      "justRand"
+    );
+
+
+    const url = `http://localhost:1111/api`;
     const choiceData = {
-      userName: user.studentName,
-      email: user.email,
-      id: user.id,
-      url,
+      url:`${url}/${user.token}/verify`,
     };
 
     const data = path.join(__dirname, "../views/FirstMailSent.ejs");
@@ -104,13 +114,13 @@ export const sendMail = async (user: any) => {
 
     const mailer = {
       from: "peterotunuya2@gmail.com",
-      to: "udidagodswill7@gmail.co",
+      to: user.email,
       subject: "Congrate",
       html: realData,
     };
 
     transport.sendMail(mailer);
-  } catch (error) {
-    console.log(error);
+  } catch (error:any) {
+    console.log(error.mesage);
   }
 };
