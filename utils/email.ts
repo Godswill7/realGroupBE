@@ -42,7 +42,7 @@ export const sendMail = async (user: any) => {
       {
         id: user.id,
       },
-      "justRand"
+      "code"
     );
 
 
