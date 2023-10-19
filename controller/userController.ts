@@ -47,7 +47,7 @@ export const signInUser = async (req: Request, res: Response) => {
     if (student) {
       const checkPass = await bcrypt.compare(password, student?.password!);
       if (checkPass) {
-        if (student?.verify === false && student?.token === "") {
+        if (student?.verify && student?.token === "") {
           console.log(student?.verify)
           console.log(student?.token)
           const token = jwt.sign({ id: student._id }, "");
