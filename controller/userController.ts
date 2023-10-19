@@ -74,51 +74,51 @@ export const signInUser = async (req: Request, res: Response) => {
   }
 };
 
-export const verifyUser = async (req: Request, res: Response) => {
-  try {
-    const { studentID,token } = req.params;
+// export const verifyUser = async (req: Request, res: Response) => {
+//   try {
+//     const { studentID,token } = req.params;
  
-    const user = await StudentModel.findById(studentID)
+//     const user = await StudentModel.findById(studentID)
 
-    if (user) {
-      const verify = await StudentModel.findByIdAndUpdate(studentID)
+//     if (user) {
+//       const verify = await StudentModel.findByIdAndUpdate(studentID)
      
-      if (user.verify === false && user.token !== "") {
-         const ver = await verify?.updateOne(
-           {
-             verify: true,
-             token: "",
-           },
-           {
-             new: true,
-           }
-        );
+//       if (user.verify === false && user.token !== "") {
+//          const ver = await verify?.updateOne(
+//            {
+//              verify: true,
+//              token: "",
+//            },
+//            {
+//              new: true,
+//            }
+//         );
         
-        return res.status(HTTP.UPDATE).json({
-          message: "verify successful",
-          data:ver?.id
-        });
+//         return res.status(HTTP.UPDATE).json({
+//           message: "verify successful",
+//           data:ver?.id
+//         });
 
-      } else {
-        return res.status(HTTP.BAD).json({
-          message: "unable to verify",
-        })
-      }
+//       } else {
+//         return res.status(HTTP.BAD).json({
+//           message: "unable to verify",
+//         })
+//       }
   
-} else {
-      return res.status(HTTP.BAD).json({
-    message:"User does not exist"
-  })
-}
+// } else {
+//       return res.status(HTTP.BAD).json({
+//     message:"User does not exist"
+//   })
+// }
 
  
-  } catch (error: any) {
-    return res.status(HTTP.BAD).json({
-      message: "Error verifying user",
-      data: error.message,
-    });
-  }
-};
+//   } catch (error: any) {
+//     return res.status(HTTP.BAD).json({
+//       message: "Error verifying user",
+//       data: error.message,
+//     });
+//   }
+// };
 
 export const VerifyStudent = async (
   req: Request,
@@ -129,7 +129,7 @@ export const VerifyStudent = async (
 
     const user = await StudentModel.findById(studentID);
     if (user) {
-      if (user.Token !== "") {
+      if (user.token !== "") {
         await StudentModel.findByIdAndUpdate(
           studentID,
           {
@@ -148,12 +148,12 @@ export const VerifyStudent = async (
         });
       }
     } else {
-      return res.status(StatusCode.ERROR).json({
+      return res.status(HTTP.BAD).json({
         message: "user does not exist",
       });
     }
   } catch (error) {
-    return res.status(StatusCode.ERROR).json({
+    return res.status(HTTP.BAD).json({
       message: "Error creating user",
     });
   }
