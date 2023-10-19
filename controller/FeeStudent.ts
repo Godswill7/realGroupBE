@@ -14,7 +14,7 @@ export const createFeeRecord = async (
     
     if (searchUser) {
       const bagInfo = await FeeModel.create({
-        cash: parseInt(cash),
+        cash,
         studentID: searchUser?._id,
         schoolName: searchUser?.schoolName,
       });

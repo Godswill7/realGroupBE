@@ -20,10 +20,9 @@ const createFeeRecord = (req, res) => __awaiter(void 0, void 0, void 0, function
     try {
         const { cash, email } = req.body;
         const searchUser = yield StudentModel_1.default.findOne({ email });
-        console.log(searchUser);
         if (searchUser) {
             const bagInfo = yield FeeModel_1.default.create({
-                cash: parseInt(cash),
+                cash,
                 studentID: searchUser === null || searchUser === void 0 ? void 0 : searchUser._id,
                 schoolName: searchUser === null || searchUser === void 0 ? void 0 : searchUser.schoolName,
             });
