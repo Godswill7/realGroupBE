@@ -10,8 +10,6 @@ export const createBagRecord = async (
 ): Promise<Response> => {
   try {
     const { bag, email } = req.body;
-    console.log(email, bag)
-    console.log(typeof bag)
 
     const searchUser = await StudentModel.findOne({ email });
     const getBag:number = bag * 200
