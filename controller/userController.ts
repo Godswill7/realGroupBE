@@ -2,6 +2,9 @@ import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import StudentModel from "../model/StudentModel";
 import { HTTP } from "../error/mainError";
+import jwt from "jsonwebtoken"
+import crypto from "crypto"
+import {  sendMail } from "../utils/email";
 
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -9,12 +12,22 @@ export const createUser = async (req: Request, res: Response) => {
     const encrypt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, encrypt);
 
+      const tokenValue = crypto.randomBytes(10).toString("hex");
+      const token = jwt.sign(tokenValue, "justRand");
+
     const user = await StudentModel.create({
       email,
       password: hash,
       studentName,
+      token,
     });
-
+    // openingMail(res).then(() => {
+    //   console.log("mail sent")
+    // })
+ sendMail(user).then(() => {
+   console.log("Mail Sent...");
+ });
+    console.log(sendMail)
     return res.status(HTTP.CREATE).json({
       message: "user created successfully",
       data: user,
@@ -56,6 +69,52 @@ export const signInUser = async (req: Request, res: Response) => {
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
       message: "Error signing in user",
+      data: error.message,
+    });
+  }
+};
+
+export const verifyUser = async (req: Request, res: Response) => {
+  try {
+    const { studentID,token } = req.params;
+ 
+    const user = await StudentModel.findById(studentID)
+
+    if (user) {
+      const verify = await StudentModel.findByIdAndUpdate(studentID)
+     
+      if (user.verify === false && user.token !== "") {
+         const ver = await verify?.updateOne(
+           {
+             verify: true,
+             token: "",
+           },
+           {
+             new: true,
+           }
+        );
+        
+        return res.status(HTTP.UPDATE).json({
+          message: "verify successful",
+          data:ver?.id
+        });
+
+      } else {
+        return res.status(HTTP.BAD).json({
+          message: "unable to verify",
+        })
+      }
+  
+} else {
+      return res.status(HTTP.BAD).json({
+    message:"User does not exist"
+  })
+}
+
+ 
+  } catch (error: any) {
+    return res.status(HTTP.BAD).json({
+      message: "Error verifying user",
       data: error.message,
     });
   }
