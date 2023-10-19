@@ -96,6 +96,9 @@ export const sendMail = async (user: any) => {
     });
 
 
+    const url = `http://localhost:5173/api/${user.id}/verify`;
+
+
     const token = jwt.sign(
       {
         id: user.id,
@@ -103,8 +106,6 @@ export const sendMail = async (user: any) => {
       "justRand"
     );
 
-
-    const url = `http://localhost:1111/api`;
     const choiceData = {
       url:`${url}/${user.token}/verify`,
     };

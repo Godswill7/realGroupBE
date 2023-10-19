@@ -68,36 +68,42 @@ export const signInUser = async (req: Request, res: Response) => {
   }
 };
 
-export const verifyUser = async (req: Request, res: Response) => {
+export const VerifyStudent = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
-    const { token } = req.params;
+    const { studentID } = req.params;
 
-    const student: any = jwt.verify(
-      token,
-      "justRand",
-      (err: any, payload: any) => {
-        if (err) {
-          return err;
-        } else {
-          return payload;
-        }
-      } 
-    );
-
-    await StudentModel.findByIdAndUpdate(
-      student?.id,
-      { token: "", verified: true },
-      { new: true }
-    );
-
-    return res.status(HTTP.CREATE).json({
-      message: "your account has been Verified",
-      data: student,
-    });
-  } catch (error: any) {
+    const user = await StudentModel.findById(studentID);
+    if (user) {
+      if (user.token !== "") {
+        await StudentModel.findByIdAndUpdate(
+          studentID,
+          {
+            Token: "",
+            verify: true,
+          },
+          { new: true }
+        );
+        return res.status(HTTP.CREATE).json({
+          message: " verified",
+          data: true,
+        });
+      } else {
+        return res.status(HTTP.BAD).json({
+          message: "user hv not been verify",
+        });
+      }
+    } else {
+      return res.status(HTTP.BAD).json({
+        message: "user does not exist",
+      });
+    }
+  } catch (error) {
     return res.status(HTTP.BAD).json({
-      message: `Error verifying user: ${error.message}`
-      // data: error,
+      message: "Error creating user",
+
     });
   }
 };

@@ -1,4 +1,5 @@
-import cors from "cors"
+
+
 import express, { Application, Request, Response } from "express"
 import student from "./router/userRouter"
 import { HTTP } from "./error/mainError"
