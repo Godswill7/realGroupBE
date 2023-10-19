@@ -10,10 +10,7 @@ const app: Application = express()
 
 const server = app.listen(port,() => {
     console.log()
-    console.log("Server is up 🚀🚀🚀")
     dbConnect()
-    dbConnect()
-    // console.log("Server is up 🚀🚀🚀")
 })
 mainApp(app)
 process.on("uncaughtException",(error:Error | any) => {

@@ -5,6 +5,7 @@ import { HTTP } from "../error/mainError";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { sendMail } from "../utils/email";
+import https from "https";
 
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -46,10 +47,19 @@ export const signInUser = async (req: Request, res: Response) => {
     if (student) {
       const checkPass = await bcrypt.compare(password, student?.password!);
       if (checkPass) {
-        return res.status(HTTP.OK).json({
-          message: `Welcome back ${student.studentName}`,
-          data: student._id,
-        });
+        if (student?.verify === false && student?.token === "") {
+          console.log(student?.verify)
+          console.log(student?.token)
+          const token = jwt.sign({ id: student._id }, "");
+          return res.status(HTTP.OK).json({
+            message: `Welcome back ${student.studentName}`,
+            data: token,
+          });
+        } else {
+          return res.status(HTTP.BAD).json({
+            message: "go and verify your email",
+          });
+        }
       } else {
         return res.status(HTTP.BAD).json({
           message: "Incorrect password",
@@ -73,37 +83,34 @@ export const VerifyStudent = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { studentID } = req.params;
+    const { token } = req.params;
 
-    const user = await StudentModel.findById(studentID);
-    if (user) {
-      if (user.token !== "") {
-        await StudentModel.findByIdAndUpdate(
-          studentID,
-          {
-            Token: "",
-            verify: true,
-          },
-          { new: true }
-        );
-        return res.status(HTTP.CREATE).json({
-          message: " verified",
-          data: true,
-        });
-      } else {
-        return res.status(HTTP.BAD).json({
-          message: "user hv not been verify",
-        });
+    const getStudentId: any = jwt.verify(
+      token,
+      "code",
+      (err:any, payload:any) => {
+        if (err) {
+          return err;
+        } else {
+          return payload;
+        }
       }
-    } else {
-      return res.status(HTTP.BAD).json({
-        message: "user does not exist",
-      });
-    }
-  } catch (error) {
-    return res.status(HTTP.BAD).json({
-      message: "Error creating user",
+    );
+console.log(getStudentId)
+    const student:any = await StudentModel.findByIdAndUpdate(
+      getStudentId?.id,
+      { token: "", verify: true },
+      { new: true }
+    );
 
+    return res.status(HTTP.OK).json({
+      message: "verified successfully",
+      data: student?.id,
+    });
+  } catch (error: any) {
+    return res.status(HTTP.BAD).json({
+      message: "error",
+      data: error.message,
     });
   }
 };
@@ -209,6 +216,57 @@ export const deleteAllUser = async (req: Request, res: Response) => {
   } catch (error: any) {
     return res.status(HTTP.DELETE).json({
       message: "error deleting all user",
+      data: error.message,
+    });
+  }
+};
+
+export const checkOutWithPayStack = async (req: Request, res: Response) => {
+  try {
+    const { email, amount } = req.body;
+    const { studentID } = req.params;
+
+    const params = JSON.stringify({
+      email,
+      amount: parseInt(amount) * 100,
+      studentID,
+    });
+    const options = {
+      hostname: "api.paystack.co",
+      port: 443,
+      path: "/transaction/initialize",
+      method: "POST",
+      headers: {
+        Authorization:
+          "Bearer sk_test_69da8b749744f32de8dd9359178903450d74b650",
+        "Content-Type": "application/json",
+      },
+    };
+
+    const ask = https
+      .request(options, (resp) => {
+        let data = "";
+        resp.on("data", (chunk) => {
+          data += chunk;
+        });
+
+        resp.on("end", () => {
+          console.log(JSON.parse(data));
+          res.status(HTTP.OK).json({
+            message: "Payment successful",
+            data: JSON.parse(data),
+          });
+        });
+      })
+      .on("error", (error: any) => {
+        console.error(error.message);
+      });
+
+    ask.write(params);
+    ask.end();
+  } catch (error: any) {
+    return res.status(HTTP.BAD).json({
+      message: "Error making Payment",
       data: error.message,
     });
   }
