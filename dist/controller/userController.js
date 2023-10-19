@@ -60,7 +60,7 @@ const signInUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 if ((student === null || student === void 0 ? void 0 : student.verify) && (student === null || student === void 0 ? void 0 : student.token) === "") {
                     console.log(student === null || student === void 0 ? void 0 : student.verify);
                     console.log(student === null || student === void 0 ? void 0 : student.token);
-                    const token = jsonwebtoken_1.default.sign({ id: student._id }, "");
+                    const token = jsonwebtoken_1.default.sign({ id: student._id }, "code");
                     return res.status(mainError_1.HTTP.OK).json({
                         message: `Welcome back ${student.studentName}`,
                         data: token,

@@ -50,7 +50,7 @@ export const signInUser = async (req: Request, res: Response) => {
         if (student?.verify && student?.token === "") {
           console.log(student?.verify)
           console.log(student?.token)
-          const token = jwt.sign({ id: student._id }, "");
+          const token = jwt.sign({ id: student._id }, "code");
           return res.status(HTTP.OK).json({
             message: `Welcome back ${student.studentName}`,
             data: token,
